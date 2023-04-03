@@ -9,11 +9,12 @@ logger.setLevel(logging.DEBUG)
 
 
 def process(intent_request):
-    location = utility.try_ex(lambda: intent_request['currentIntent']['slots']['Location'])
-    checkin_date = utility.try_ex(lambda: intent_request['currentIntent']['slots']['CheckInDate'])
-    nights = utility.safe_int(utility.try_ex(lambda: intent_request['currentIntent']['slots']['Nights']))
-    room_type = utility.try_ex(lambda: intent_request['currentIntent']['slots']['RoomType'])
-    session_attributes = intent_request['sessionAttributes'] if intent_request['sessionAttributes'] is not None else {}
+    location = utility.try_ex(lambda: intent_request['sessionState']['intent']['slots']['Location'])
+    checkin_date = utility.try_ex(lambda: intent_request['sessionState']['intent']['slots']['CheckInDate'])
+    nights = utility.safe_int(utility.try_ex(lambda: intent_request['sessionState']['intent']['slots']['Nights']))
+    room_type = utility.try_ex(lambda: intent_request['sessionState']['intent']['slots']['RoomType'])
+
+    session_attributes = intent_request['sessionState']['sessionAttributes'] if intent_request['sessionState']['sessionAttributes'] is not None else {}
 
     # Load confirmation history and track the current reservation.
     reservation = json.dumps({
@@ -28,14 +29,14 @@ def process(intent_request):
 
     if intent_request['invocationSource'] == 'DialogCodeHook':
         # Validate any slots which have been specified.  If any are invalid, re-elicit for their value
-        validation_result = validate_hotel(intent_request['currentIntent']['slots'])
+        validation_result = validate_hotel(intent_request['sessionState']['intent']['slots'])
         if not validation_result['isValid']:
-            slots = intent_request['currentIntent']['slots']
+            slots = intent_request['sessionState']['intent']['slots']
             slots[validation_result['violatedSlot']] = None
 
             return lex_v2.elicit_slot(
                 session_attributes,
-                intent_request['currentIntent']['name'],
+                intent_request['sessionState']['intent']['name'],
                 slots,
                 validation_result['violatedSlot'],
                 validation_result['message']
@@ -51,7 +52,7 @@ def process(intent_request):
             utility.try_ex(lambda: session_attributes.pop('currentReservationPrice'))
 
         session_attributes['currentReservation'] = reservation
-        return lex_v2.delegate(session_attributes, intent_request['currentIntent']['slots'])
+        return lex_v2.delegate(session_attributes, intent_request['sessionState']['intent']['slots'])
 
     # Booking the hotel.  In a real application, this would likely involve a call to a backend service.
     logger.debug('bookHotel under={}'.format(reservation))
