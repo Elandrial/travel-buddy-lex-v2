@@ -13,19 +13,18 @@ def router(event):
     intent_name = event['sessionState']['intent']['name']
     print(f"Intent: {intent_name}")
 
-    match intent_name:
-        case "BookFlight":
-            result = book_flight.process(event)
-        case "BookCar":
-            result = book_car.process(event)
-        case "BookHotel":
-            result = book_hotel.process(event)
-        case _:
-            raise Exception('No environment variable for intent: ' + intent_name)
+    if intent_name == "BookFlight":
+        result = book_flight.process(event)
+    elif intent_name == "BookCar":
+        result = book_car.process(event)
+    elif intent_name == "BookHotel":
+        result = book_hotel.process(event)
+    else:
+        raise Exception('No environment variable for intent: ' + intent_name)
 
     print(result)
-    payload = json.load(result)
-    return payload
+    # payload = json.load(result)
+    return result
 
 
 # Entry point
