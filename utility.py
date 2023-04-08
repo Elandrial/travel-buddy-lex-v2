@@ -1,45 +1,47 @@
 import datetime
 import dateutil.parser
-
-
-def try_ex(func):
-    """
-    Call passed in function in try block. If KeyError is encountered return None.
-    This function is intended to be used to safely access dictionary.
-
-    Note that this function would have negative impact on performance.
-    """
-
-    try:
-        return func()
-    except KeyError:
-        return None
+from validation import isvalid_number
 
 
 def safe_int(n):
-    """
-    Safely convert n value to int.
-    """
-    if n is not None:
+    if n is not None and isvalid_number(n):
         return int(n)
-    return n
-
-
-def isvalid_date(date):
-    try:
-        dateutil.parser.parse(date)
-        return True
-    except ValueError:
-        return False
+    return None
 
 
 def get_day_difference(later_date, earlier_date):
-    later_datetime = dateutil.parser.parse(later_date).date()
-    earlier_datetime = dateutil.parser.parse(earlier_date).date()
-    return abs(later_datetime - earlier_datetime).days
+    later_datetime = convert_to_date(later_date)
+    earlier_datetime = convert_to_date(earlier_date)
+
+    if earlier_datetime and later_datetime:
+        return abs(later_datetime - earlier_datetime).days
+    else:
+        return None
 
 
-def add_days(date, number_of_days):
-    new_date = dateutil.parser.parse(date).date()
+def convert_to_date(date_value):
+    output_date = convert_to_datetime(date_value)
+    if isinstance(output_date, datetime.datetime):
+        output_date = output_date.date()
+
+    return output_date
+
+
+def convert_to_datetime(datetime_value):
+    output_date = None
+    if isinstance(datetime_value, str):
+        try:
+            output_date = dateutil.parser.parse(datetime_value)
+        except dateutil.parser.ParserError:
+            output_date = None
+    elif isinstance(datetime_value, datetime.datetime):
+        output_date = datetime_value
+    elif isinstance(datetime_value, datetime.date):
+        output_date = datetime.datetime.combine(datetime_value, datetime.datetime.min.time())
+    return output_date
+
+
+def add_days(date_value, number_of_days):
+    new_date = convert_to_date(date_value)
     new_date += datetime.timedelta(days=number_of_days)
     return new_date.strftime('%Y-%m-%d')

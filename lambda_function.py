@@ -14,21 +14,21 @@ def router(event):
     print(f"Intent: {intent_name}")
 
     if intent_name == "BookFlight":
-        result = book_flight.process(event)
+        flight_booking = book_flight.BookFlight(event)
+        result = flight_booking.process()
     elif intent_name == "BookCar":
-        result = book_car.process(event)
+        car_booking = book_car.BookCar(event)
+        result = car_booking.process()
     elif intent_name == "BookHotel":
-        result = book_hotel.process(event)
+        hotel_booking = book_hotel.BookHotel(event)
+        result = hotel_booking.process()
     else:
         raise Exception('No environment variable for intent: ' + intent_name)
-
-    print(result)
     # payload = json.load(result)
     return result
 
 
 # Entry point
 def lambda_handler(event, context):
-    print(event)
     response = router(event)
     return response
