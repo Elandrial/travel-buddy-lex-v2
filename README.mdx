@@ -1,0 +1,12 @@
+# travel-buddy-lex-v2
+These scripts are used in conjunction with AWS Lex v2 for validation and general processing. Please note it isn't a complete solution, it was designed and built as a part of a University Assignment
+
+## Running
+Deployment has to be performed in AWS Lambda and then associated with the relevant Lex v2 Bot
+
+## Implementation
+Intent is the main class that all lex intents should inherit from, see BookHotel for an idea of how it is implemented.  The main thing to remember is to set up your slot validations for each intent.
+
+## Testing
+Testing is setup for most components using pytest
+To run the tests, type 'pytest' into the terminal

@@ -7,6 +7,7 @@ import logging
 import validation
 from intent import Intent
 
+# provides the configuration setup for validation of slots
 hotel_slots = [{'slotName': 'Location',
                 'name': 'Location',
                 'validation': [{'fn': validation.isvalid_in_array,
@@ -59,9 +60,15 @@ hotel_slots = [{'slotName': 'Location',
 
 
 class BookHotel(Intent):
+    """
+    Handles the Lex Intent BookHotel, inherits from Intent which provides most of the logic
+    """
     def __init__(self, intent_request):
         Intent.__init__(self, intent_request, hotel_slots, 'Hotel Booking')
 
+    """
+    Fires once all data has been entered and validated. Calculates a price based on the inputted values
+    """
     def on_data_completed(self, reservation, session_attributes):
         location = reservation['Location']
         room_type = reservation['RoomType']
@@ -80,6 +87,10 @@ class BookHotel(Intent):
         #                             intent_request['sessionState']['intent']['slots'], message)
         return message
 
+    """
+    Generates a number within a reasonable range that might be expected for a car.
+    The price also takes into consideration being a young driver
+    """
     def generate_hotel_price(self, location, nights, room_type, breakfast_included):
         """
         Generates a number within a reasonable range that might be expected for a hotel.

@@ -4,6 +4,10 @@ import dateutil.parser
 import lex_v2
 import utility
 
+"""
+The core methods for validating data, often these are passed by reference for intent slots
+"""
+
 
 def isvalid_number(value):
     if isinstance(value, int) or isinstance(value, float):
@@ -51,7 +55,10 @@ def isvalid_date_beyond(value, date_value):
     else:
         return False
 
-
+"""
+Dynamic validation performance, takes a function reference and determines what values it needs to pass it, 
+to validate a value
+"""
 def do_validate(validation_fn, value, dynamic_values):
     if 'val1' in dynamic_values:
         slot1_value = dynamic_values['val1']
@@ -71,6 +78,7 @@ def do_validate(validation_fn, value, dynamic_values):
         return validation_fn['fn'](value)
 
 
+# maps slot values from Lex to keywords, used when one slot field depends on the value of another
 def map_validation(slots, validation_fn):
     dynamic_values = {}
 

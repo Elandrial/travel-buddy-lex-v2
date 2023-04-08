@@ -2,6 +2,9 @@ import datetime
 import dateutil.parser
 from validation import isvalid_number
 
+"""
+Utility functions to support validation and data translation
+"""
 
 def safe_int(n):
     if n is not None and isvalid_number(n):

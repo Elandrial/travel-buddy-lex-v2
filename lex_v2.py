@@ -1,3 +1,7 @@
+"""
+Processing methods and template generation related to interaction with Lex v2
+"""
+
 def get_slots(intent_request):
     return intent_request['sessionState']['intent']['slots']
 

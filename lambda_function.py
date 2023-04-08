@@ -8,7 +8,9 @@ import book_hotel
 client = boto3.client('lambda')
 
 
-# Intent Router
+""" 
+Intent Router, determines what we should call when we receive an intent request from Lex
+"""
 def router(event):
     intent_name = event['sessionState']['intent']['name']
     print(f"Intent: {intent_name}")

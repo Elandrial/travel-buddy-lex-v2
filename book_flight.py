@@ -7,6 +7,7 @@ import logging
 import validation
 from intent import Intent
 
+# provides the configuration setup for validation of slots
 flight_slots = [{'slotName': 'LocationFrom',
                  'name': 'Departure City',
                  'validation': [{'fn': validation.isvalid_in_array,
@@ -73,9 +74,15 @@ flight_slots = [{'slotName': 'LocationFrom',
 
 
 class BookFlight(Intent):
+    """
+    Handles the Lex Intent BookFlight, inherits from Intent which provides most of the logic
+    """
     def __init__(self, intent_request):
         Intent.__init__(self, intent_request, flight_slots, 'Flight Booking')
 
+    """
+    Fires once all data has been entered and validated. Calculates a price based on the inputted values
+    """
     def on_data_completed(self, reservation, session_attributes):
         location_from = reservation['LocationFrom']
         location_to = reservation['LocationTo']
@@ -94,10 +101,10 @@ class BookFlight(Intent):
         #                             intent_request['sessionState']['intent']['slots'], message)
         return message
 
+    """
+    Generates a number within a reasonable range that might be expected for a flight.
+    """
     def generate_flight_price(self, pickup_city, pickup_date, return_date, driver_age, car_type):
-        """
-        Generates a number within a reasonable range that might be expected for a flight.
-        """
 
         class_types = ['economy', 'business', 'first class']
         cost_of_living = 0
@@ -105,4 +112,4 @@ class BookFlight(Intent):
         for i in range(len(pickup_city)):
             cost_of_living += ord(pickup_city.lower()[i]) - 97
 
-        return 2 * (100 + cost_of_living + (100 * (1+ class_types.index(class_types.lower()))))
+        return 2 * (100 + cost_of_living + (100 * (1 + class_types.index(class_types.lower()))))

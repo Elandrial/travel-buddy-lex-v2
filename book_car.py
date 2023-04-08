@@ -7,6 +7,7 @@ import logging
 import validation
 from intent import Intent
 
+# provides the configuration setup for validation of slots
 car_slots = [{'slotName': 'PickUpCity',
               'name': 'Pickup City',
               'validation': [{'fn': validation.isvalid_in_array,
@@ -63,9 +64,16 @@ car_slots = [{'slotName': 'PickUpCity',
 
 
 class BookCar(Intent):
+    """
+    Handles the Lex Intent BookCar, inherits from Intent which provides most of the logic
+    """
+
     def __init__(self, intent_request):
         Intent.__init__(self, intent_request, car_slots, 'Car Booking')
 
+    """
+    Fires once all data has been entered and validated. Calculates a price based on the inputted values
+    """
     def on_data_completed(self, reservation, session_attributes):
         pickup_city = reservation['PickUpCity']
         pickup_date = reservation['PickUpDate']
@@ -84,11 +92,11 @@ class BookCar(Intent):
         #                             intent_request['sessionState']['intent']['slots'], message)
         return message
 
+    """
+    Generates a number within a reasonable range that might be expected for a car.
+    The price also takes into consideration being a young driver
+    """
     def generate_car_price(self, pickup_city, pickup_date, return_date, driver_age, car_type):
-        """
-        Generates a number within a reasonable range that might be expected for a car.
-        The price also takes into consideration being a young driver
-        """
 
         car_types = ['hatchback', 'sedan', 'ute', 'luxury', 'sports', 'minivan']
         cost_of_living = 0
